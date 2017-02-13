@@ -26,7 +26,7 @@ struct getlist{
 };	
 
 struct message{
-	int fun;
+	int fun,frame;
 	char data[256];
 	struct info src;
 	struct info dest;
@@ -140,14 +140,9 @@ int main(int argc,char *argv[]){
 			scanf("%d",&cc);
 			printf("client no is %d\n",cc);
 			printf("start sending data...\n");
-			
+			int count=1;
 			while(1){
-				struct timeval tv;
-				tv.tv_sec=10;
-				tv.tv_usec=0;
-				fd_set fds;
-				FD_ZERO(&fds);
-				FD_SET(sockfd,&fds);
+				//count++;
 				printf("Enter data\n");
 				memset(buf,0,sizeof(buf));
 				msg=(struct message*)malloc(sizeof(struct message));
@@ -165,17 +160,34 @@ int main(int argc,char *argv[]){
 					write(sockfd,(char*)msg,sizeof(struct message));						
 					break;
 				}
-				strcpy(msg->data,buf);
-				write(sockfd,(char*)msg,sizeof(struct message));
+				char *element;
+				element=strtok(buf," ");
+				while(element!=NULL){
+					struct timeval tv;
+					tv.tv_sec=10;
+					tv.tv_usec=0;
+					fd_set fds;
+					FD_ZERO(&fds);
+					FD_SET(sockfd,&fds);
+					msg->fun=1;
+					msg->dest.client_no=cc;
+					msg->src.client_no=client_no;
+					msg->frame=count;
+					strcpy(msg->data,element); printf("%s: sending to receiver\n",element);
+					write(sockfd,(char*)msg,sizeof(struct message));  sleep(1);
+					if(select(sockfd+1,&fds,NULL,NULL,&tv)==0){
+						printf("reciever did not response. sending same data.......\n");continue;
+					}else{
+						read(sockfd,(char*)msg,sizeof(struct message));
+						printf("receiver: %s:%d\n",msg->data,msg->frame);
+					}	
+					element=strtok(NULL," "); count++;
+					FD_CLR(sockfd,&fds);	
+				}
 				
-				if(select(sockfd+1,&fds,NULL,NULL,&tv)==0){
-					printf("reciever did not response. send same data again.......\n");
-				}else{
+				
+				
 					
-					read(sockfd,(char*)msg,sizeof(struct message));
-					printf("receiver: %s\n",msg->data);
-				}	
-				FD_CLR(sockfd,&fds);		
 				free(msg);
 			}
 		}else if(choice==4){

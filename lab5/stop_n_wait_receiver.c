@@ -26,7 +26,7 @@ struct getlist{
 };	
 
 struct message{
-	int fun;
+	int fun,frame;
 	char data[256];
 	struct info src;
 	struct info dest;
@@ -92,7 +92,7 @@ int main(int argc,char *argv[]){
 	msg=(struct message*)malloc(sizeof(struct message));
 	printf("Enter your name.\n");
 	read(0,name2,sizeof(name2));
-	int zzz=strlen(name2),z;
+	int zzz=strlen(name2),z,count=1;
 	name2[zzz]='\0';
 	strcpy(msg->src.name,name2);
 	strcpy(msg->dest.name,"server");
@@ -109,18 +109,27 @@ int main(int argc,char *argv[]){
 		msg=(struct message*)malloc(sizeof(struct message));
 		msg1=(struct message*)malloc(sizeof(struct message));
 		if(read(sockfd,(char*)msg,sizeof(struct message))>0){
-			printf("sender: %s\n",msg->data);
-			printf("do you want to send ACK\n0:No\n1:yes\n");
-			scanf("%d",&z);
-			if(z==1){memset(msg1->data,0,sizeof(msg->data));
-				read(0,buf,sizeof(buf));
-				strcpy(msg1->data,buf);
+			if(msg->frame==count){
+				printf("sender: %s\n",msg->data);
+				memset(msg1->data,0,sizeof(msg1->data));
+				strcpy(msg1->data,"ACK");
 				msg1->fun=1;
+				msg1->frame=count+1;
+				msg1->dest.client_no=msg->src.client_no;
+				msg1->src.client_no=msg->dest.client_no;
+				strcpy(msg1->src.name,name2);
+				write(sockfd,(char*)msg1,sizeof(struct message)); count++;
+			}else{
+				memset(msg1->data,0,sizeof(msg1->data));
+				strcpy(msg1->data,"ACK");
+				msg1->fun=1;
+				msg1->frame=count;
 				msg1->dest.client_no=msg->src.client_no;
 				msg1->src.client_no=msg->dest.client_no;
 				strcpy(msg1->src.name,name2);
 				write(sockfd,(char*)msg1,sizeof(struct message));
 			}
+			
 			free(msg);
 			free(msg1);
 		}else{

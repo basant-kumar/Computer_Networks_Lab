@@ -35,7 +35,7 @@ struct getlist{
 };	
 
 struct message{
-	int fun;
+	int fun,frame;
 	char data[256];
 	struct info src;
 	struct info dest;
