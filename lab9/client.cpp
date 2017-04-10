@@ -99,11 +99,11 @@ int main(int argc,char *argv[]){
 	msg=(struct message*)malloc(sizeof(struct message));
 	printf("Enter your name.\n");
 	scanf("%s",name2);
-	int zzz=strlen(name2);//printf("size of string is %d\n",zzz);
-	name2[zzz]='\0';
+	//int zzz=strlen(name2);//printf("size of string is %d\n",zzz);
+	//name2[zzz]='\0';
 	printf("Enter your MAC address\n");
 	scanf("%s",mac);
-	strncpy(msg->src.name,name2,zzz);
+	strncpy(msg->src.name,name2,strlen(name2));
 	strncpy(msg->src.MAC,mac,strlen(mac));
 	strcpy(msg->dest.name,"server");
 	strcpy(msg->data,"Hello world");
@@ -196,7 +196,7 @@ int main(int argc,char *argv[]){
 				}
 				else{  
 					int sp=strlen(msg->src.name);
-					msg->src.name[sp-1]='\0';
+					msg->src.name[sp]='\0';
 					printf("%s(%d): %s\n",msg->src.name,msg->src.client_no,msg->data);
 				}
 			}else{

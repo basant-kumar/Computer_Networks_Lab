@@ -244,7 +244,7 @@ struct client* server_process(struct client *clients){
 				char data1[256],z[30];
 				strcpy(z,p->name);
 				int sz=strlen(z);
-				z[sz-1]='\0';
+				z[sz]='\0';
 				sprintf(name,"%d",msg->src.client_no);
 				strcat(name," ("); strcat(name,z); strcat(name,") "); strcat(name," is offline\n");
 				strcpy(data1,"Client no ");
