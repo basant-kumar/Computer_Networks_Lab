@@ -1,3 +1,0 @@
-No of Send()          Total Bytes          Client ID                  Filename          Time Taken(micro sec)
-1                        6                10.10.38.223            t.txt              1695
-2                        6                10.10.38.223            f1.txt              1673
